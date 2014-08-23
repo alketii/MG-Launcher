@@ -172,7 +172,7 @@ class Ui_Form(object):
                 elif status_code == 2:
                     status_label = "In progress"
 
-                item = QtGui.QTreeWidgetItem([status_label,fields[3+offset],fields[5+offset],fields[6+offset],fields[10+offset],fields[8+offset]])
+                item = QtGui.QTreeWidgetItem([status_label,fields[3+offset],fields[5+offset],fields[6+offset],fields[11+offset],fields[8+offset]])
                 Ui_Form.servers_ip.append([fields[4+offset],fields[11+offset]])
                 self.treeWidget.insertTopLevelItem(0,item)
                 repeat += 1
@@ -201,8 +201,9 @@ class Ui_Form(object):
             self.pushButton_2.setEnabled(False)
     
     def joinGame(self):
-        index = self.treeWidget.indexOfTopLevelItem(self.treeWidget.currentItem())
+        index = int(self.treeWidget.indexOfTopLevelItem(self.treeWidget.currentItem()))
         mg_dir = str(config['MGLauncher']['mg_dir'])
+        Ui_Form.servers_ip.reverse()
         os.system(mg_dir+" --connect="+Ui_Form.servers_ip[index][0]+":"+Ui_Form.servers_ip[index][1])
         
     def startMegaglest(self):
