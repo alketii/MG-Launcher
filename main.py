@@ -180,9 +180,14 @@ class Ui_Form(object):
             self.pushButton_2.setEnabled(False)
             
             #TODO , make it show only when needed
-            if int(self.checkBox_2.checkState()) == 2 and notifyUser:
+            if int(self.checkBox_2.checkState()) == 2 and notifyUser and int(self.checkBox.checkState()) == 0:
                 notify = pynotify.Notification("MG Launcher","Slots available",os.getcwd()+"/data/megaglest.bmp",)
                 notify.show()
+            elif int(self.checkBox_2.checkState()) == 2 and notifyUser and int(self.checkBox.checkState()) == 2:
+                index = self.treeWidget.indexOfTopLevelItem(self.treeWidget.currentItem())
+                mg_dir = str(config['MGLauncher']['mg_dir'])
+                self.checkBox.setCheckState(False)
+                os.system(mg_dir+" --connect="+Ui_Form.servers_ip[index][0]+":"+Ui_Form.servers_ip[index][1])
              
         QtCore.QTimer.singleShot(10000, self.updateServers)
         
