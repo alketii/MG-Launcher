@@ -1,3 +1,5 @@
+# GNU GPL v2 
+# Copyright alket , FreshDumbledore
 from PyQt4 import QtCore, QtGui
 import urllib , os , configparser, pynotify
 
