@@ -197,6 +197,15 @@ class Ui_Form(object):
     def startMegaglest(self):
         mg_dir = str(config['MGLauncher']['mg_dir'])
         os.system(mg_dir)
+    
+    def center(self):
+        frameGm = self.frameGeometry()
+        screen = QtGui.QApplication.desktop().screenNumber(QtGui.QApplication.desktop().cursor().pos())
+        centerPoint = QtGui.QApplication.desktop().screenGeometry(screen).center()
+        frameGm.moveCenter(centerPoint)
+        self.move(frameGm.topLeft())
+        
+        self.center()
 
 if __name__ == "__main__":
     import sys
