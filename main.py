@@ -1,8 +1,9 @@
 from PyQt4 import QtCore, QtGui
-import urllib , os , configparser
+import urllib , os , configparser, pynotify
 
 config = configparser.ConfigParser()
 config.read('data/conf.ini')
+pynotify.init("image")
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -137,7 +138,7 @@ class Ui_Form(object):
     
     def checkMGdir(self):
         if not os.path.isfile(config['MGLauncher']['mg_dir']):
-            mg_dir = str(QtGui.QFileDialog.getExistingDirectory(None,'Select directory of project',os.path.expanduser('~')))
+            mg_dir = str(QtGui.QFileDialog.getExistingDirectory(None,'Select Megaglest directory',os.path.expanduser('~')))
             mg_dir += "/start_megaglest"
             config['MGLauncher']['mg_dir'] = mg_dir
             with open('data/conf.ini', 'w') as configfile:
@@ -173,6 +174,12 @@ class Ui_Form(object):
                 repeat += 1
             Ui_Form.servers_oldList = servers_data
             self.pushButton_2.setEnabled(False)
+            
+            #TODO , make it show only when needed
+            if config['MGLauncher']['notify'] == "1":
+                notify = pynotify.Notification("MG Launcher","Servers available",os.getcwd()+"/data/megaglest.bmp",)
+                notify.show()
+             
         QtCore.QTimer.singleShot(10000, self.updateServers)
         
     def updateJoinGame(self):
