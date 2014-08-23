@@ -139,13 +139,12 @@ class Ui_Form(object):
     def checkMGdir(self):
         if not os.path.isfile(config['MGLauncher']['mg_dir']):
             mg_dir = str(QtGui.QFileDialog.getExistingDirectory(None,'Select Megaglest directory',os.path.expanduser('~')))
-            mg_dir += "/start_megaglest"
-            config['MGLauncher']['mg_dir'] = mg_dir
+            config['MGLauncher']['mg_dir'] = mg_dir + "/start_megaglest"
             with open('data/conf.ini', 'w') as configfile:
                 config.write(configfile)
-                
             self.checkMGdir()
         else:
+            
             self.updateServers()
     
     def updateServers(self):
@@ -172,7 +171,7 @@ class Ui_Form(object):
                 elif status_code == 2:
                     status_label = "In progress"
 
-                item = QtGui.QTreeWidgetItem([status_label,fields[3+offset],fields[5+offset],fields[6+offset],fields[11+offset],fields[8+offset]])
+                item = QtGui.QTreeWidgetItem([status_label,fields[3+offset],fields[5+offset],fields[6+offset],fields[10+offset],fields[8+offset]])
                 Ui_Form.servers_ip.append([fields[4+offset],fields[11+offset]])
                 self.treeWidget.insertTopLevelItem(0,item)
                 repeat += 1
