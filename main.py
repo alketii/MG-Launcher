@@ -157,18 +157,22 @@ class Ui_Form(object):
             fields = servers_data.split("|")
             servers_count = len(fields)/14
             repeat = 0
+            notifyUser = False
             while servers_count != repeat:
                 offset = repeat * 14
                 status_code = int(fields[13+offset])
                 status_label = "Unknown"
                 if status_code == 0:
                     status_label = "Waiting for players"
+                    if int(fields[10+offset]) > 0:
+                        status_label = "Accepting players"
+                        notifyUser = True
                 elif status_code == 1:
                     status_label = "Game full, pending start"
                 elif status_code == 2:
                     status_label = "In progress"
 
-                item = QtGui.QTreeWidgetItem([status_label,fields[3+offset],fields[5+offset],fields[6+offset],fields[13+offset],fields[8+offset]])
+                item = QtGui.QTreeWidgetItem([status_label,fields[3+offset],fields[5+offset],fields[6+offset],fields[10+offset],fields[8+offset]])
                 Ui_Form.servers_ip.append([fields[4+offset],fields[11+offset]])
                 self.treeWidget.insertTopLevelItem(0,item)
                 repeat += 1
@@ -176,8 +180,8 @@ class Ui_Form(object):
             self.pushButton_2.setEnabled(False)
             
             #TODO , make it show only when needed
-            if config['MGLauncher']['notify'] == "1":
-                notify = pynotify.Notification("MG Launcher","Servers available",os.getcwd()+"/data/megaglest.bmp",)
+            if int(self.checkBox_2.checkState()) == 2 and notifyUser:
+                notify = pynotify.Notification("MG Launcher","Slots available",os.getcwd()+"/data/megaglest.bmp",)
                 notify.show()
              
         QtCore.QTimer.singleShot(10000, self.updateServers)
@@ -206,7 +210,7 @@ class Ui_Form(object):
         self.move(frameGm.topLeft())
         
         self.center()
-
+    
 if __name__ == "__main__":
     import sys
     app = QtGui.QApplication(sys.argv)
@@ -215,4 +219,3 @@ if __name__ == "__main__":
     ui.setupUi(Form)
     Form.show()
     sys.exit(app.exec_())
-
