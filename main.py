@@ -189,6 +189,7 @@ class Ui_Form(object):
                     index = self.treeWidget.indexOfTopLevelItem(self.treeWidget.currentItem())
                     mg_dir = str(config['MGLauncher']['mg_dir'])
                     self.checkBox.setCheckState(False)
+                    Ui_Form.servers_ip.reverse()
                     os.system(mg_dir+" --connect="+Ui_Form.servers_ip[index][0]+":"+Ui_Form.servers_ip[index][1])
              
         QtCore.QTimer.singleShot(10000, self.updateServers)
