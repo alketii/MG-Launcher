@@ -9,6 +9,7 @@ ostype = platform.system()
 user_dir = os.path.expanduser('~')
 player = ""
 
+
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -22,6 +23,7 @@ try:
 except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
+    
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -128,13 +130,14 @@ class Ui_Form(object):
         self.listWidget_2.setSortingEnabled(__sortingEnabled)
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("Form", "Chat", None))
         self.pushButton.setText(_translate("Form", "Start Megaglest", None))
-        self.label_2.setText(_translate("Form", "<html><head/><body><p>New updates available:</p><p>- Megaglest 3.9.3</p><p>- TowerDefense #17</p><p><br/></p><p><a href=\"#update\"><span style=\" text-decoration: underline; color:#0057ae;\">Click here</span></a> to update.</p></body></html>", None))
+        self.label_2.setText(_translate("Form", "<html><head></head><body><h4>News</h4><ul><li><a href='http://www.megaglest.org'>Multishots are coming</a></li></ul></body></html>", None))
         self.treeWidget.header().resizeSection(0,120)
         self.treeWidget.header().resizeSection(1,120)
         self.treeWidget.header().resizeSection(2,120)
         self.treeWidget.header().resizeSection(3,120)
         self.treeWidget.header().resizeSection(4,50)
         self.treeWidget.header().resizeSection(5,40)
+        self.plainTextEdit.setPlainText("Coming soon.")
         self.checkMGdir()
     
     servers_oldList = "x"
@@ -144,16 +147,19 @@ class Ui_Form(object):
         if not os.path.isfile(config.get('mg_dir')):
             mg_dir = str(QtGui.QFileDialog.getExistingDirectory(None,'Select Megaglest directory',user_dir))
             config['mg_dir'] = mg_dir + "/start_megaglest"
-            config.write()
             if not os.path.isfile(config.get('mg_conf')):
                 if ostype == "Linux":
-                    #assume
-                    if os.path.isfile(user_dir+"/.megaglest/glestuser.ini"):
-                        config['mg_conf'] = user_dir+"/.megaglest/glestuser.ini"
-                    else:
-                        mg_conf = str(QtGui.QFileDialog.getExistingDirectory(None,'Select Megaglest data directory',user_dir))
-                        config['mg_conf'] = mg_conf+"/glestuser.ini"
-                    config.write()
+                    assume = user_dir+"/.megaglest/glestuser.ini"
+                elif ostype == "Windows":
+                    assume = "%AppData%/megaglest/glestuser.ini"
+                else:
+                    assume = ""
+                if os.path.isfile(assume):
+                    config['mg_conf'] = user_dir+"/.megaglest/glestuser.ini"
+                else:
+                    mg_conf = str(QtGui.QFileDialog.getExistingDirectory(None,'Select Megaglest data directory',user_dir))
+                    config['mg_conf'] = mg_conf+"/glestuser.ini"
+            config.write()
             self.checkMGdir()
         else:
             mgINI = configobj.ConfigObj(str(config['mg_conf']))
@@ -227,15 +233,6 @@ class Ui_Form(object):
     def startMegaglest(self):
         mg_dir = str(config['mg_dir'])
         os.system(mg_dir)
-    
-    def center(self):
-        frameGm = self.frameGeometry()
-        screen = QtGui.QApplication.desktop().screenNumber(QtGui.QApplication.desktop().cursor().pos())
-        centerPoint = QtGui.QApplication.desktop().screenGeometry(screen).center()
-        frameGm.moveCenter(centerPoint)
-        self.move(frameGm.topLeft())
-        
-        self.center()
     
 if __name__ == "__main__":
     import sys
