@@ -164,7 +164,7 @@ class Ui_Form(object):
         else:
             mgINI = configobj.ConfigObj(str(config['mg_conf']))
             player = mgINI.get("NetPlayerName")
-            if player == "newbie":
+            if player == "newbie" or player == None:
                 player, button_ok = QtGui.QInputDialog.getText(None,"Nickname","Please set a nickname")
                 if button_ok:
                     mgINI["NetPlayerName"] = str(player)
