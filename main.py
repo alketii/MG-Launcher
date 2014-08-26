@@ -1,11 +1,13 @@
 # GNU GPL v2 
-# Copyright alket , FreshDumbledore
+# Copyright MegaGlest Community
 from PyQt4 import QtCore, QtGui
-import urllib , os , configparser, pynotify
+import urllib , os , pynotify , platform , configobj
 
-config = configparser.ConfigParser()
-config.read('data/conf.ini')
+config = configobj.ConfigObj("data/conf.ini")
 pynotify.init("image")
+ostype = platform.system()
+user_dir = os.path.expanduser('~')
+player = ""
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -139,14 +141,28 @@ class Ui_Form(object):
     servers_ip = []
     
     def checkMGdir(self):
-        if not os.path.isfile(config['MGLauncher']['mg_dir']):
-            mg_dir = str(QtGui.QFileDialog.getExistingDirectory(None,'Select Megaglest directory',os.path.expanduser('~')))
-            config['MGLauncher']['mg_dir'] = mg_dir + "/start_megaglest"
-            with open('data/conf.ini', 'w') as configfile:
-                config.write(configfile)
+        if not os.path.isfile(config.get('mg_dir')):
+            mg_dir = str(QtGui.QFileDialog.getExistingDirectory(None,'Select Megaglest directory',user_dir))
+            config['mg_dir'] = mg_dir + "/start_megaglest"
+            config.write()
+            if not os.path.isfile(config.get('mg_conf')):
+                if ostype == "Linux":
+                    #assume
+                    if os.path.isfile(user_dir+"/.megaglest/glestuser.ini"):
+                        config['mg_conf'] = user_dir+"/.megaglest/glestuser.ini"
+                    else:
+                        mg_conf = str(QtGui.QFileDialog.getExistingDirectory(None,'Select Megaglest data directory',user_dir))
+                        config['mg_conf'] = mg_conf+"/glestuser.ini"
+                    config.write()
             self.checkMGdir()
         else:
-            
+            mgINI = configobj.ConfigObj(str(config['mg_conf']))
+            player = mgINI.get("NetPlayerName")
+            if player == "newbie":
+                player, button_ok = QtGui.QInputDialog.getText(None,"Nickname","Please set a nickname")
+                if button_ok:
+                    mgINI["NetPlayerName"] = str(player)
+                    mgINI.write()
             self.updateServers()
     
     def updateServers(self):
@@ -192,7 +208,7 @@ class Ui_Form(object):
                     self.checkBox.setCheckState(False)
                     Ui_Form.servers_ip.reverse()
                     os.system(mg_dir+" --connect="+Ui_Form.servers_ip[index][0]+":"+Ui_Form.servers_ip[index][1])
-             
+        
         QtCore.QTimer.singleShot(10000, self.updateServers)
         
     def updateJoinGame(self):
@@ -204,12 +220,12 @@ class Ui_Form(object):
     
     def joinGame(self):
         index = int(self.treeWidget.indexOfTopLevelItem(self.treeWidget.currentItem()))
-        mg_dir = str(config['MGLauncher']['mg_dir'])
+        mg_dir = str(config['mg_dir'])
         Ui_Form.servers_ip.reverse()
         os.system(mg_dir+" --connect="+Ui_Form.servers_ip[index][0]+":"+Ui_Form.servers_ip[index][1])
         
     def startMegaglest(self):
-        mg_dir = str(config['MGLauncher']['mg_dir'])
+        mg_dir = str(config['mg_dir'])
         os.system(mg_dir)
     
     def center(self):
